@@ -52,8 +52,10 @@ function loadQuestion() {
         
         let scratchOverlay = document.createElement("canvas"); // Use canvas for scratch effect
         scratchOverlay.classList.add("scratch");
-        scratchOverlay.width = 100;  // Adjust width/height based on size of options
-        scratchOverlay.height = 100;
+
+        // Make the canvas size the same as the option box
+        scratchOverlay.width = option.offsetWidth;  // Dynamically set width based on the option
+        scratchOverlay.height = option.offsetHeight; // Dynamically set height based on the option
         
         let context = scratchOverlay.getContext("2d");
         context.fillStyle = "#999";  // Grey background to start
@@ -169,28 +171,18 @@ function checkAnswer(choice, optionWrapper, scratchOverlay) {
         return;
     }
 
-    // Increase attempt count for this question
-    attempts++;
-
     if (choice === correctAnswer) {
         optionWrapper.style.backgroundColor = "green";  // Correct answer
         let points = [2, 1, 0, -1][attempts] || -1;
         score += points;
         document.getElementById("score").textContent = score;
-
-        // Disable further interaction after the correct answer
-        optionWrapper.style.pointerEvents = "none";
-        
-        // Show next question button after correct answer
-        document.getElementById("next-btn").style.display = "block";  // Show next button
     } else {
         optionWrapper.style.backgroundColor = "red";  // Wrong answer
-        // Reset the pointer events to allow retry
-        optionWrapper.style.pointerEvents = "auto";
-        
-        // Hide next question button until the correct answer is selected
-        document.getElementById("next-btn").style.display = "none";
     }
+
+    // Prevent further interactions after answering
+    optionWrapper.style.pointerEvents = "none";
+    document.getElementById("next-btn").style.display = "block";
 }
 
 // Function to move to the next question
