@@ -68,8 +68,8 @@ function loadQuestion() {
         optionsContainer.appendChild(optionWrapper);
     });
 
-    attempts = 0;
-    document.getElementById("next-btn").style.display = "none";
+    attempts = 0;  // Reset attempts for the next question
+    document.getElementById("next-btn").style.display = "none";  // Hide the next button initially
 }
 
 // Function to handle the scratch effect
@@ -78,29 +78,26 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
     let scratchAmount = 0;  // Track how much has been scratched
     let context = scratchOverlay.getContext("2d");
 
-    // Ensure the canvas has a grey background to start with
-    context.fillStyle = "#999";  // Grey background
-    context.fillRect(0, 0, scratchOverlay.width, scratchOverlay.height);
-
-    // Track mouse/touch interactions to simulate scratching
+    // Handle mouse/touch start (when the user starts scratching)
     optionWrapper.addEventListener("mousedown", (e) => {
-        e.preventDefault();
         isScratching = true;
         scratch(e);
     });
 
+    // Handle mouse move (during scratching)
     optionWrapper.addEventListener("mousemove", (e) => {
         if (isScratching) {
             scratch(e);
         }
     });
 
+    // Handle mouse/touch end (when the user stops scratching)
     optionWrapper.addEventListener("mouseup", () => {
         isScratching = false;
     });
 
+    // Handle touch events for mobile
     optionWrapper.addEventListener("touchstart", (e) => {
-        e.preventDefault();
         isScratching = true;
         scratch(e);
     });
@@ -115,36 +112,35 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
         isScratching = false;
     });
 
-    // Scratch function that erases parts of the canvas
+    // Function to apply the scratch effect
     function scratch(e) {
-        // Get the position of the scratch event relative to the canvas
+        // Get the position of the scratch event
         let rect = scratchOverlay.getBoundingClientRect();
-        let x = (e.clientX || e.touches[0].clientX) - rect.left;
-        let y = (e.clientY || e.touches[0].clientY) - rect.top;
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
 
-        // Create a circular "scratch" effect by erasing part of the grey background
-        context.globalCompositeOperation = "destination-out"; // Erase the grey background
+        // Create a circular "scratch" effect
+        context.globalCompositeOperation = "destination-out"; // Erase part of the grey background
         context.beginPath();
         context.arc(x, y, 20, 0, Math.PI * 2);
         context.fill();
 
-        // After scratching, calculate the amount of the canvas that has been scratched
+        // Check how much has been scratched (based on pixels erased)
         scratchAmount = calculateScratchAmount(scratchOverlay, context);
 
-        // If 30% of the canvas is scratched, mark the option as fully scratched
+        // If at least 30% scratched, mark as fully scratched
         if (scratchAmount >= 30 && !scratchedOptions.includes(optionWrapper)) {
             scratchedOptions.push(optionWrapper);
-            optionWrapper.style.backgroundColor = "#ccc"; // Grey background when fully scratched
+            optionWrapper.style.backgroundColor = "#ccc"; // Grey when fully scratched
         }
     }
 
-    // Function to calculate how much of the canvas has been scratched
+    // Function to calculate scratch progress
     function calculateScratchAmount(scratchOverlay, context) {
         let imageData = context.getImageData(0, 0, scratchOverlay.width, scratchOverlay.height);
         let scratchedPixels = 0;
         let totalPixels = imageData.width * imageData.height;
 
-        // Loop through the pixels to count how many have been erased (alpha = 0)
         for (let i = 0; i < totalPixels; i++) {
             let alpha = imageData.data[i * 4 + 3]; // Alpha channel
             if (alpha === 0) {
@@ -152,9 +148,15 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
             }
         }
 
-        // Return the percentage of the canvas that has been scratched
         return (scratchedPixels / totalPixels) * 100;
     }
+
+    // Disable scratching once 30% is scratched
+    optionWrapper.addEventListener("click", () => {
+        if (scratchedOptions.length >= 1) {
+            optionWrapper.style.pointerEvents = "none";  // Disable further scratching after full scratch
+        }
+    });
 }
 
 // Function to check the answer and update the score
@@ -167,22 +169,29 @@ function checkAnswer(choice, optionWrapper, scratchOverlay) {
         return;
     }
 
+    // Increase attempt count for this question
+    attempts++;
+
     if (choice === correctAnswer) {
         optionWrapper.style.backgroundColor = "green";  // Correct answer
         let points = [2, 1, 0, -1][attempts] || -1;
         score += points;
         document.getElementById("score").textContent = score;
+
+        // Disable further interaction after the correct answer
+        optionWrapper.style.pointerEvents = "none";
+        document.getElementById("next-btn").style.display = "block";  // Show next button
     } else {
         optionWrapper.style.backgroundColor = "red";  // Wrong answer
+        // Reset the pointer events to allow retry
+        optionWrapper.style.pointerEvents = "auto";
     }
-
-    // Prevent further interactions after answering
-    optionWrapper.style.pointerEvents = "none";
-    document.getElementById("next-btn").style.display = "block";
 }
 
 // Function to move to the next question
 function nextQuestion() {
     currentQuestion++;
-    loadQuestion();
+    attempts = 0;  // Reset attempts for the next question
+    loadQuestion();  // Load the next question
+    document.getElementById("next-btn").style.display = "none";  // Hide next button until answer is correct
 }
