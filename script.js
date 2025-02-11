@@ -52,8 +52,8 @@ function loadQuestion() {
 
         let scratchOverlay = document.createElement("canvas"); // Use canvas for scratch effect
         scratchOverlay.classList.add("scratch");
-        scratchOverlay.width = 100;  // Adjust width/height based on size of options
-        scratchOverlay.height = 100;
+        scratchOverlay.width = 150;  // Adjust width/height based on size of options
+        scratchOverlay.height = 150;
 
         let context = scratchOverlay.getContext("2d");
         context.fillStyle = "#999";  // Grey background to start
