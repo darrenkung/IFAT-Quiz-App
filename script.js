@@ -114,28 +114,31 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
         isScratching = false;
     });
 
-    // Function to apply the scratch effect
-    function scratch(e) {
-        // Get the position of the scratch event
-        let rect = scratchOverlay.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+// Function to apply the scratch effect
+function scratch(e) {
+    // Get the position of the scratch event
+    let rect = scratchOverlay.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
 
-        // Create a circular "scratch" effect
-        context.globalCompositeOperation = "destination-out"; // Erase part of the grey background
-        context.beginPath();
-        context.arc(x, y, 20, 0, Math.PI * 2);
-        context.fill();
+    // Create a circular "scratch" effect
+    context.globalCompositeOperation = "destination-out"; // Erase part of the grey background
+    context.beginPath();
+    context.arc(x, y, 20, 0, Math.PI * 2);
+    context.fill();
 
-        // Check how much has been scratched (based on pixels erased)
-        scratchAmount = calculateScratchAmount(scratchOverlay, context);
+    // Check how much has been scratched (based on pixels erased)
+    scratchAmount = calculateScratchAmount(scratchOverlay, context);
 
-        // If at least 30% scratched, mark as fully scratched
-        if (scratchAmount >= 75 && !scratchedOptions.includes(optionWrapper)) {
-            scratchedOptions.push(optionWrapper);
-            optionWrapper.style.backgroundColor = "#ccc"; // Grey when fully scratched
-        }
+    // If at least 75% scratched, mark as fully scratched automatically
+    if (scratchAmount >= 75 && !scratchedOptions.includes(optionWrapper)) {
+        scratchedOptions.push(optionWrapper);
+        optionWrapper.style.backgroundColor = "#ccc"; // Grey when fully scratched
+
+        // Automatically stop further scratching on this option
+        optionWrapper.style.pointerEvents = "none"; // Disable further scratching
     }
+}
 
     // Function to calculate scratch progress
     function calculateScratchAmount(scratchOverlay, context) {
