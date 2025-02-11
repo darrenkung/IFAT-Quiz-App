@@ -22,27 +22,48 @@ button {
     cursor: pointer;
 }
 
-#options div {
+#options {
+    margin-top: 20px;
+}
+
+.option-wrapper {
+    position: relative;
+    display: inline-block;
     margin: 10px;
     padding: 20px;
-    background: gray;
-    color: white;
-    cursor: pointer;
+    background: #333;
     border-radius: 5px;
+    cursor: pointer;
+    color: transparent;
+    overflow: hidden;
+    text-align: center;
+}
+
+.option {
     position: relative;
+    z-index: 1;
+    font-size: 20px;
+    color: transparent; /* Hide text initially */
+    transition: opacity 0.5s ease-in-out;
 }
 
 .scratch {
-    background: url('scratch.png'); /* Add a scratch-like texture */
-    width: 100%;
-    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #999;
+    z-index: 2;
+    cursor: pointer;
     opacity: 1;
-    transition: opacity 0.5s;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .scratch.revealed {
-    opacity: 0;
+    opacity: 0; /* Reveal the text when scratched */
+}
+
+.option-wrapper:hover .option {
+    color: white; /* Show the text on hover */
 }
