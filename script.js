@@ -52,15 +52,18 @@ function loadQuestion() {
 
         let scratchOverlay = document.createElement("canvas"); // Use canvas for scratch effect
         scratchOverlay.classList.add("scratch");
-        scratchOverlay.width = 150;  // Adjust width/height based on size of options
-        scratchOverlay.height = 150;
+        
+        // Dynamically set the canvas size based on the optionWrapper size
+        optionWrapper.appendChild(option);
+        optionWrapper.appendChild(scratchOverlay);
+
+        // Set canvas size to match the wrapper size
+        scratchOverlay.width = optionWrapper.offsetWidth;
+        scratchOverlay.height = optionWrapper.offsetHeight;
 
         let context = scratchOverlay.getContext("2d");
         context.fillStyle = "#999";  // Grey background to start
         context.fillRect(0, 0, scratchOverlay.width, scratchOverlay.height); // Draw grey background
-
-        optionWrapper.appendChild(option);
-        optionWrapper.appendChild(scratchOverlay);
 
         enableScratchEffect(optionWrapper, scratchOverlay, option);
 
