@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+#upload-section, #quiz-section {
+    margin: 20px auto;
+    width: 300px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px gray;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#options div {
+    margin: 10px;
+    padding: 20px;
+    background: gray;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    position: relative;
+}
+
+.scratch {
+    background: url('scratch.png'); /* Add a scratch-like texture */
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.scratch.revealed {
+    opacity: 0;
+}
