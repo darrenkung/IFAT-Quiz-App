@@ -180,11 +180,16 @@ function checkAnswer(choice, optionWrapper, scratchOverlay) {
 
         // Disable further interaction after the correct answer
         optionWrapper.style.pointerEvents = "none";
+        
+        // Show next question button after correct answer
         document.getElementById("next-btn").style.display = "block";  // Show next button
     } else {
         optionWrapper.style.backgroundColor = "red";  // Wrong answer
         // Reset the pointer events to allow retry
         optionWrapper.style.pointerEvents = "auto";
+        
+        // Hide next question button until the correct answer is selected
+        document.getElementById("next-btn").style.display = "none";
     }
 }
 
