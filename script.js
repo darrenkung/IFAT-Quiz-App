@@ -131,7 +131,7 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
         scratchAmount = calculateScratchAmount(scratchOverlay, context);
 
         // If at least 30% scratched, mark as fully scratched
-        if (scratchAmount >= 30 && !scratchedOptions.includes(optionWrapper)) {
+        if (scratchAmount >= 75 && !scratchedOptions.includes(optionWrapper)) {
             scratchedOptions.push(optionWrapper);
             optionWrapper.style.backgroundColor = "#ccc"; // Grey when fully scratched
         }
