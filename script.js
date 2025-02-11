@@ -5,6 +5,7 @@ let answerKey = "";
 let currentQuestion = 0;
 let attempts = 0;
 let score = 0;
+let scratchedOptions = []; // Array to track which options have been fully scratched
 
 // Function to load the quiz based on the entered quiz code
 async function loadQuiz() {
@@ -57,9 +58,9 @@ function loadQuestion() {
         optionWrapper.appendChild(option);
         optionWrapper.appendChild(scratchOverlay);
 
-        enableScratchEffect(optionWrapper, scratchOverlay); // Enable the scratch effect
-        
-        optionWrapper.onclick = () => checkAnswer(choice, option);
+        enableScratchEffect(optionWrapper, scratchOverlay, option);
+
+        optionWrapper.onclick = () => checkAnswer(choice, optionWrapper, scratchOverlay);
         optionsContainer.appendChild(optionWrapper);
     });
 
@@ -68,8 +69,13 @@ function loadQuestion() {
 }
 
 // Function to handle the scratch effect
-function enableScratchEffect(optionWrapper, scratchOverlay) {
+function enableScratchEffect(optionWrapper, scratchOverlay, option) {
     let isScratching = false;
+    let scratchAmount = 0;  // Track how much has been scratched
+    let context = scratchOverlay.getContext("2d");
+
+    // Set the initial grey background for unscratchable options
+    optionWrapper.style.backgroundColor = "#999";
 
     // Handle mouse/touch start (when the user starts scratching)
     optionWrapper.addEventListener("mousedown", (e) => {
@@ -113,29 +119,67 @@ function enableScratchEffect(optionWrapper, scratchOverlay) {
         let y = e.clientY - rect.top;
 
         // Create a circular mask to simulate the scratching
-        let context = scratchOverlay.getContext("2d");
         context.globalCompositeOperation = "destination-out"; // Create a "cut out" effect
         context.beginPath();
         context.arc(x, y, 20, 0, Math.PI * 2);
         context.fill();
-        if (context.getImageData(x, y, 1, 1).data[3] === 0) {
-            scratchOverlay.classList.add("revealed");
-            optionWrapper.querySelector(".option").style.color = "white"; // Reveal the option text
+
+        // Check how much has been scratched (based on pixels erased)
+        scratchAmount = calculateScratchAmount(scratchOverlay, context);
+
+        // If at least 30% scratched, mark as fully scratched
+        if (scratchAmount >= 30 && !scratchedOptions.includes(optionWrapper)) {
+            scratchedOptions.push(optionWrapper);
+            optionWrapper.style.backgroundColor = "#ccc"; // Grey when fully scratched
         }
     }
+
+    // Function to calculate scratch progress
+    function calculateScratchAmount(scratchOverlay, context) {
+        let imageData = context.getImageData(0, 0, scratchOverlay.width, scratchOverlay.height);
+        let scratchedPixels = 0;
+        let totalPixels = imageData.width * imageData.height;
+
+        for (let i = 0; i < totalPixels; i++) {
+            let alpha = imageData.data[i * 4 + 3]; // Alpha channel
+            if (alpha === 0) {
+                scratchedPixels++;
+            }
+        }
+
+        return (scratchedPixels / totalPixels) * 100;
+    }
+
+    // Disable scratching once 30% is scratched
+    optionWrapper.addEventListener("click", () => {
+        if (scratchedOptions.length >= 1) {
+            optionWrapper.style.pointerEvents = "none";  // Disable further scratching after full scratch
+        }
+    });
 }
 
 // Function to check the answer and update the score
-function checkAnswer(choice) {
+function checkAnswer(choice, optionWrapper, scratchOverlay) {
     let correctAnswer = answerKey[currentQuestion];
+    let option = optionWrapper.querySelector(".option");
+
+    // Only allow answer checking once fully scratched
+    if (!scratchedOptions.includes(optionWrapper)) {
+        return;
+    }
+
     if (choice === correctAnswer) {
+        optionWrapper.style.backgroundColor = "green";  // Correct answer
         let points = [2, 1, 0, -1][attempts] || -1;
         score += points;
         document.getElementById("score").textContent = score;
-        document.getElementById("next-btn").style.display = "block";
     } else {
-        attempts++;
+        optionWrapper.style.backgroundColor = "red";  // Wrong answer
     }
+
+    // Prevent further interactions after answering
+    optionWrapper.style.pointerEvents = "none";
+    document.getElementById("next-btn").style.display = "block";
 }
 
 // Function to move to the next question
