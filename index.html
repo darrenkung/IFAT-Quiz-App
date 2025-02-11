@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scratch Card Quiz</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Scratch Quiz</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="upload-section">
-        <h1>Scratch Card Quiz</h1>
-        <p>Enter Quiz Code:</p>
-        <input type="text" id="quizCode" placeholder="Enter quiz code (e.g., quiz1)">
+        <input type="text" id="quizCode" placeholder="Enter Quiz Code">
         <button onclick="loadQuiz()">Start Quiz</button>
     </div>
 
     <div id="quiz-section" style="display: none;">
-        <h2>Question <span id="question-number">1</span></h2>
-        <div id="options"></div>
-        <div>
-            <p>Score: <span id="score">0</span></p>
-            <button id="next-btn" style="display: none;" onclick="nextQuestion()">Next Question</button>
+        <div id="question">
+            <span id="question-number"></span>
+            <div id="options"></div>
         </div>
+
+        <div id="score-section">
+            <span>Score: <span id="score">0</span></span>
+        </div>
+
+        <button id="next-btn" style="display: none;" onclick="nextQuestion()">Next Question</button>
     </div>
 
     <script src="script.js"></script>
