@@ -1,4 +1,4 @@
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/";
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/darrenkung/grat/main/";
 
 async function uploadAnswerKey() {
     let fileInput = document.getElementById("answerKey");
@@ -17,7 +17,7 @@ async function uploadAnswerKey() {
 }
 
 async function uploadToGitHub(quizCode, answerKey) {
-    let url = `https://api.github.com/repos/YOUR_GITHUB_USERNAME/YOUR_REPO/contents/${quizCode}.txt`;
+    let url = `https://api.github.com/repos/darrenkung/grat/contents/${quizCode}.txt`;
     let response = await fetch(url, {
         method: "PUT",
         headers: {
