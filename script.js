@@ -53,10 +53,10 @@ function loadQuestion() {
         scratchOverlay.classList.add("scratch");
         scratchOverlay.width = 100;  // Adjust width/height based on size of options
         scratchOverlay.height = 100;
-        
+
         optionWrapper.appendChild(option);
         optionWrapper.appendChild(scratchOverlay);
-        
+
         enableScratchEffect(optionWrapper, scratchOverlay); // Enable the scratch effect
         
         optionWrapper.onclick = () => checkAnswer(choice, option);
@@ -118,8 +118,7 @@ function enableScratchEffect(optionWrapper, scratchOverlay) {
         context.beginPath();
         context.arc(x, y, 20, 0, Math.PI * 2);
         context.fill();
-        // Check if the overlay is sufficiently scratched to reveal the option
-        if (scratchOverlay.width * scratchOverlay.height * 0.6 < context.measurePath()) {
+        if (context.getImageData(x, y, 1, 1).data[3] === 0) {
             scratchOverlay.classList.add("revealed");
             optionWrapper.querySelector(".option").style.color = "white"; // Reveal the option text
         }
