@@ -54,6 +54,10 @@ function loadQuestion() {
         scratchOverlay.classList.add("scratch");
         scratchOverlay.width = 100;  // Adjust width/height based on size of options
         scratchOverlay.height = 100;
+        
+        let context = scratchOverlay.getContext("2d");
+        context.fillStyle = "#999";  // Grey background to start
+        context.fillRect(0, 0, scratchOverlay.width, scratchOverlay.height); // Draw grey background
 
         optionWrapper.appendChild(option);
         optionWrapper.appendChild(scratchOverlay);
@@ -73,9 +77,6 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
     let isScratching = false;
     let scratchAmount = 0;  // Track how much has been scratched
     let context = scratchOverlay.getContext("2d");
-
-    // Set the initial grey background for unscratchable options
-    optionWrapper.style.backgroundColor = "#999";
 
     // Handle mouse/touch start (when the user starts scratching)
     optionWrapper.addEventListener("mousedown", (e) => {
@@ -118,8 +119,8 @@ function enableScratchEffect(optionWrapper, scratchOverlay, option) {
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
 
-        // Create a circular mask to simulate the scratching
-        context.globalCompositeOperation = "destination-out"; // Create a "cut out" effect
+        // Create a circular "scratch" effect
+        context.globalCompositeOperation = "destination-out"; // Erase part of the grey background
         context.beginPath();
         context.arc(x, y, 20, 0, Math.PI * 2);
         context.fill();
