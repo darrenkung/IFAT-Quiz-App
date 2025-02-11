@@ -7,14 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="upload-section">
+    <div id="intro-section">
+        <h1>Welcome to the Scratch Quiz!</h1>
+        <p>Scratch to reveal the answer choices and test your knowledge!</p>
         <input type="text" id="quizCode" placeholder="Enter Quiz Code">
         <button onclick="loadQuiz()">Start Quiz</button>
     </div>
 
     <div id="quiz-section" style="display: none;">
         <div id="question">
-            <span id="question-number"></span>
+            <p>Question <span id="question-number">1</span></p>
             <div id="options"></div>
         </div>
 
