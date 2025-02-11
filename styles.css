@@ -2,6 +2,11 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    padding: 20px;
+}
+
+#intro-section {
+    margin-top: 50px;
 }
 
 #quiz-section {
@@ -25,6 +30,7 @@ body {
     align-items: center;
     margin: 10px;
     background-color: #f7f7f7;
+    cursor: pointer;
 }
 
 .option {
@@ -38,7 +44,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;  /* Allow interaction with the option under the canvas */
+    pointer-events: none;
     background-color: #999;
 }
 
@@ -64,4 +70,8 @@ input {
     padding: 10px;
     font-size: 18px;
     margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 2em;
 }
