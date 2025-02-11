@@ -9,7 +9,7 @@ async function loadQuiz() {
         alert("Please enter a quiz code.");
         return;
     }
-    let url = `${GITHUB_RAW_URL}${quizCode}.txt`;
+    let url = `${"https://raw.githubusercontent.com/darrenkung/grat/main/"}${quizCode}.txt`;
     let response = await fetch(url);
     if (response.ok) {
         answerKey = await response.text();
