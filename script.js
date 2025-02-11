@@ -1,10 +1,4 @@
-// script.js
-
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/darrenkung/grat/main/answer/";
-
-// Teacher Instructions
-// Manually upload the answer key .txt file to the "answer" folder in the main GitHub repository.
-// The file name should match the quiz code (e.g., "quiz1.txt").
 
 // Student Page Logic (student.html)
 async function loadQuiz() {
