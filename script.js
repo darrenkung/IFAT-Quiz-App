@@ -68,8 +68,8 @@ function loadQuestion() {
         optionsContainer.appendChild(optionWrapper);
     });
 
-    attempts = 0;  // Reset attempts for the next question
-    document.getElementById("next-btn").style.display = "none";  // Hide the next button initially
+    attempts = 0;
+    document.getElementById("next-btn").style.display = "none";
 }
 
 // Function to handle the scratch effect
@@ -196,7 +196,5 @@ function checkAnswer(choice, optionWrapper, scratchOverlay) {
 // Function to move to the next question
 function nextQuestion() {
     currentQuestion++;
-    attempts = 0;  // Reset attempts for the next question
-    loadQuestion();  // Load the next question
-    document.getElementById("next-btn").style.display = "none";  // Hide next button until answer is correct
+    loadQuestion();
 }
