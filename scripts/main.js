@@ -127,6 +127,8 @@ const canvasElements = document.querySelectorAll('.scratch-canvas');
 canvasElements.forEach(canvas => {
     const ctx = canvas.getContext('2d');
     let isScratching = false;
+    let scratchedAmount = 0; // Track how much has been scratched
+    const threshold = 0.7; // Threshold to consider an option selected (70%)
 
     // Set canvas size (60x60 pixels)
     canvas.width = 60;
@@ -152,6 +154,15 @@ canvasElements.forEach(canvas => {
 
         // Clear a small area where the user is "scratching"
         ctx.clearRect(x - 10, y - 10, 20, 20);
+
+        // Update the scratched amount
+        scratchedAmount += 20;  // Increment by the area scratched (20px per scratch)
+
+        // Check if the threshold is reached (70% of the canvas area)
+        if (scratchedAmount >= canvas.width * canvas.height * threshold) {
+            // Enable the button to allow answer submission
+            enableOptionToSubmit(canvas);
+        }
     };
 
     // Event listeners for mouse and touch events
@@ -176,4 +187,11 @@ canvasElements.forEach(canvas => {
     canvas.addEventListener('touchend', () => {
         isScratching = false;
     });
+
+    // Enable the button once the threshold is met
+    function enableOptionToSubmit(canvas) {
+        const optionButton = canvas.closest('.option');
+        optionButton.disabled = false;
+        optionButton.style.backgroundColor = "green"; // Indicate readiness to submit
+    }
 });
