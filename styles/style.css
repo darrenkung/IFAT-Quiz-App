@@ -35,6 +35,7 @@
     height: 60px; /* Set height to 60px */
     background-color: #999; /* The "scratchable" area */
     z-index: 1;
+    border-radius: 10px;  /* Optional: smooth edges */
 }
 
 .answer {
