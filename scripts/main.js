@@ -50,18 +50,21 @@ function loadQuestion() {
 function checkAnswer(selectedOption, button) {
     attempts++;
 
-    // Disable all options after an answer is clicked
-    document.querySelectorAll(".option").forEach(btn => {
-        btn.disabled = true;
-    });
-
+    // If the student selects the correct answer
     if (selectedOption === answerKey[currentQuestion]) {
         button.style.backgroundColor = "green";
         document.getElementById("feedback").textContent = "Correct!";
         
+        // Calculate the score based on the number of attempts
         score += attempts === 1 ? 2 : (attempts === 2 ? 1 : 0);
         updateScoreDisplay(); // Update live score display
 
+        // Disable all options once the correct answer is selected
+        document.querySelectorAll(".option").forEach(btn => {
+            btn.disabled = true;
+        });
+
+        // Show the Next Question button
         document.getElementById("next-question").style.display = "block";
     } else {
         button.style.backgroundColor = "red";
@@ -72,9 +75,6 @@ function checkAnswer(selectedOption, button) {
             setTimeout(nextQuestion, 1000);
         }
     }
-
-    // Enable the Next Question button
-    document.getElementById("next-question").style.display = "block";
 }
 
 // Update the live score display
