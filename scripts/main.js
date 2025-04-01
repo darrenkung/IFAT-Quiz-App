@@ -24,6 +24,16 @@ async function startQuiz() {
     loadQuestion();
 }
 
+// Fetch the answer key based on the quiz code
+async function fetchAnswerKey(quizCode) {
+    // Replace with your actual API or backend call to fetch the answer key
+    const response = await fetch(`https://your-server.com/answerkeys/${quizCode}.txt`);
+    if (response.ok) {
+        return await response.text();
+    }
+    return null;
+}
+
 // Load the next question
 function loadQuestion() {
     if (currentQuestion >= answerKey.length) {
@@ -33,62 +43,75 @@ function loadQuestion() {
     }
 
     attempts = 0;
-    document.getElementById("question-number").textContent = currentQuestion + 1;
+    document.getElementById("question-number").textContent = `Question ${currentQuestion + 1}`;
     document.getElementById("feedback").textContent = "";
     document.getElementById("next-question").style.display = "none";
     updateScoreDisplay();  // Update live score display
 
     // Enable buttons and reset styles
-    document.querySelectorAll(".option").forEach(btn => {
-        btn.disabled = false;
-        btn.style.backgroundColor = "gray";
-        btn.onclick = () => checkAnswer(btn.dataset.option, btn);
+    document.querySelectorAll(".scratch-card").forEach(card => {
+        card.classList.remove("revealed");
+        enableScratch(card);
+    });
+}
+
+// Enable the scratch card interaction
+function enableScratch(card) {
+    const canvas = card.querySelector(".scratch-canvas");
+    const context = canvas.getContext("2d");
+    const answerDiv = card.querySelector(".answer");
+    
+    // Set up canvas size and background (scratchable layer)
+    canvas.width = card.offsetWidth;
+    canvas.height = card.offsetHeight;
+    context.fillStyle = "gray";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Handle mouse or stylus events to scratch off the layer
+    let isScratching = false;
+    canvas.addEventListener("mousedown", () => isScratching = true);
+    canvas.addEventListener("mouseup", () => isScratching = false);
+    canvas.addEventListener("mousemove", (e) => {
+        if (isScratching) {
+            const rect = canvas.getBoundingClientRect();
+            context.clearRect(e.clientX - rect.left - 10, e.clientY - rect.top - 10, 20, 20); // Scratch effect
+        }
+    });
+    
+    // When the card is revealed, show the answer
+    canvas.addEventListener("mouseleave", () => {
+        if (context.getImageData(0, 0, canvas.width, canvas.height).data.filter(pixel => pixel < 100).length < 100) {
+            card.classList.add("revealed");
+        }
     });
 }
 
 // Check the selected answer
-function checkAnswer(selectedOption, button) {
+function checkAnswer(selectedOption) {
     attempts++;
 
-    // If the student selects the correct answer
-    if (selectedOption === answerKey[currentQuestion]) {
-        button.style.backgroundColor = "green";
-        document.getElementById("feedback").textContent = "Correct!";
-        
-        // Update the score based on the attempt number (4, 2, 1, 0)
-        if (attempts === 1) {
-            score += 4; // First attempt
-        } else if (attempts === 2) {
-            score += 2; // Second attempt
-        } else if (attempts === 3) {
-            score += 1; // Third attempt
-        } else if (attempts === 4) {
-            score += 0; // Fourth attempt
-        }
+    // If the user scratched off enough of the answer
+    const selectedCard = document.querySelector(`.option[data-option="${selectedOption}"] .scratch-card`);
+    if (selectedCard.classList.contains("revealed")) {
+        const answer = selectedCard.querySelector(".answer").textContent;
+        if (answer === answerKey[currentQuestion]) {
+            document.getElementById("feedback").textContent = "Correct!";
+            score += attempts === 1 ? 4 : (attempts === 2 ? 2 : (attempts === 3 ? 1 : 0));
+            updateScoreDisplay();
 
-        updateScoreDisplay(); // Update live score display
+            // Disable all cards once the answer is revealed
+            document.querySelectorAll(".scratch-card").forEach(card => {
+                card.removeEventListener("mousedown", enableScratch);
+            });
 
-        // Disable all options once the correct answer is selected
-        document.querySelectorAll(".option").forEach(btn => {
-            btn.disabled = true;
-        });
-
-        // Show the Next Question button
-        document.getElementById("next-question").style.display = "block";
-    } else {
-        button.style.backgroundColor = "red";
-        if (attempts === 4) {
-            document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
-            score -= 1; // Deduct 1 mark if all attempts are used up
-            updateScoreDisplay(); // Update live score display
-            setTimeout(nextQuestion, 1000);
+            document.getElementById("next-question").style.display = "block";
         }
     }
 }
 
 // Update the live score display
 function updateScoreDisplay() {
-    document.getElementById("live-score").textContent = score;
+    document.getElementById("live-score").textContent = `Score: ${score}`;
 }
 
 // Move to the next question
