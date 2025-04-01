@@ -39,62 +39,49 @@ function loadQuestion() {
     updateScoreDisplay();  // Update live score display
 
     // Enable buttons and reset styles
-    document.querySelectorAll(".scratch-card").forEach(card => {
-        card.classList.remove("revealed");
-        enableScratch(card);
-    });
-}
-
-// Enable the scratch card interaction
-function enableScratch(card) {
-    const canvas = card.querySelector(".scratch-canvas");
-    const context = canvas.getContext("2d");
-    const answerDiv = card.querySelector(".answer");
-    
-    // Set up canvas size and background (scratchable layer)
-    canvas.width = card.offsetWidth;
-    canvas.height = card.offsetHeight;
-    context.fillStyle = "gray";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Handle mouse or stylus events to scratch off the layer
-    let isScratching = false;
-    canvas.addEventListener("mousedown", () => isScratching = true);
-    canvas.addEventListener("mouseup", () => isScratching = false);
-    canvas.addEventListener("mousemove", (e) => {
-        if (isScratching) {
-            const rect = canvas.getBoundingClientRect();
-            context.clearRect(e.clientX - rect.left - 10, e.clientY - rect.top - 10, 20, 20); // Scratch effect
-        }
-    });
-    
-    // When the card is revealed, show the answer
-    canvas.addEventListener("mouseleave", () => {
-        if (context.getImageData(0, 0, canvas.width, canvas.height).data.filter(pixel => pixel < 100).length < 100) {
-            card.classList.add("revealed");
-        }
+    document.querySelectorAll(".option").forEach(btn => {
+        btn.disabled = false;
+        btn.style.backgroundColor = "gray";
+        btn.onclick = () => checkAnswer(btn.dataset.option, btn);
     });
 }
 
 // Check the selected answer
-function checkAnswer(selectedOption) {
+function checkAnswer(selectedOption, button) {
     attempts++;
 
-    // If the user scratched off enough of the answer
-    const selectedCard = document.querySelector(`.option[data-option="${selectedOption}"] .scratch-card`);
-    if (selectedCard.classList.contains("revealed")) {
-        const answer = selectedCard.querySelector(".answer").textContent;
-        if (answer === answerKey[currentQuestion]) {
-            document.getElementById("feedback").textContent = "Correct!";
-            score += attempts === 1 ? 4 : (attempts === 2 ? 2 : (attempts === 3 ? 1 : 0));
-            updateScoreDisplay();
+    // If the student selects the correct answer
+    if (selectedOption === answerKey[currentQuestion]) {
+        button.style.backgroundColor = "green";
+        document.getElementById("feedback").textContent = "Correct!";
+        
+        // Update the score based on the attempt number (4, 2, 1, 0)
+        if (attempts === 1) {
+            score += 4; // First attempt
+        } else if (attempts === 2) {
+            score += 2; // Second attempt
+        } else if (attempts === 3) {
+            score += 1; // Third attempt
+        } else if (attempts === 4) {
+            score += 0; // Fourth attempt
+        }
 
-            // Disable all cards once the answer is revealed
-            document.querySelectorAll(".scratch-card").forEach(card => {
-                card.removeEventListener("mousedown", enableScratch);
-            });
+        updateScoreDisplay(); // Update live score display
 
-            document.getElementById("next-question").style.display = "block";
+        // Disable all options once the correct answer is selected
+        document.querySelectorAll(".option").forEach(btn => {
+            btn.disabled = true;
+        });
+
+        // Show the Next Question button
+        document.getElementById("next-question").style.display = "block";
+    } else {
+        button.style.backgroundColor = "red";
+        if (attempts === 4) {
+            document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
+            score -= 1; // Deduct 1 mark if all attempts are used up
+            updateScoreDisplay(); // Update live score display
+            setTimeout(nextQuestion, 1000);
         }
     }
 }
@@ -109,3 +96,61 @@ function nextQuestion() {
     currentQuestion++;
     loadQuestion();
 }
+
+// Initialize canvas for scratch effect
+const canvasElements = document.querySelectorAll('.scratch-canvas');
+
+// Add event listeners for both touch and mouse events
+canvasElements.forEach(canvas => {
+    const ctx = canvas.getContext('2d');
+    let isScratching = false;
+
+    // Set canvas size (60x60 pixels)
+    canvas.width = 60;
+    canvas.height = 60;
+
+    // Create the scratchable overlay (gray layer)
+    ctx.fillStyle = '#999';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Function to handle the scratching
+    const scratchHandler = (event) => {
+        if (!isScratching) return;
+
+        // Get position based on touch or mouse event
+        let x, y;
+        if (event.type.startsWith('touch')) {
+            x = event.touches[0].clientX - canvas.offsetLeft;
+            y = event.touches[0].clientY - canvas.offsetTop;
+        } else {
+            x = event.clientX - canvas.offsetLeft;
+            y = event.clientY - canvas.offsetTop;
+        }
+
+        // Clear a small area where the user is "scratching"
+        ctx.clearRect(x - 10, y - 10, 20, 20);
+    };
+
+    // Event listeners for mouse and touch events
+    canvas.addEventListener('mousedown', (e) => {
+        isScratching = true;
+        scratchHandler(e);
+    });
+    canvas.addEventListener('mousemove', (e) => {
+        if (isScratching) scratchHandler(e);
+    });
+    canvas.addEventListener('mouseup', () => {
+        isScratching = false;
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+        isScratching = true;
+        scratchHandler(e);
+    });
+    canvas.addEventListener('touchmove', (e) => {
+        if (isScratching) scratchHandler(e);
+    });
+    canvas.addEventListener('touchend', () => {
+        isScratching = false;
+    });
+});
