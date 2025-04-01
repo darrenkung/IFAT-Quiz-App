@@ -55,8 +55,17 @@ function checkAnswer(selectedOption, button) {
         button.style.backgroundColor = "green";
         document.getElementById("feedback").textContent = "Correct!";
         
-        // Calculate the score based on the number of attempts
-        score += attempts === 1 ? 2 : (attempts === 2 ? 1 : 0);
+        // Update the score based on the attempt number (4, 2, 1, 0)
+        if (attempts === 1) {
+            score += 4; // First attempt
+        } else if (attempts === 2) {
+            score += 2; // Second attempt
+        } else if (attempts === 3) {
+            score += 1; // Third attempt
+        } else if (attempts === 4) {
+            score += 0; // Fourth attempt
+        }
+
         updateScoreDisplay(); // Update live score display
 
         // Disable all options once the correct answer is selected
@@ -70,7 +79,7 @@ function checkAnswer(selectedOption, button) {
         button.style.backgroundColor = "red";
         if (attempts === 4) {
             document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
-            score -= 1;
+            score -= 1; // Deduct 1 mark if all attempts are used up
             updateScoreDisplay(); // Update live score display
             setTimeout(nextQuestion, 1000);
         }
