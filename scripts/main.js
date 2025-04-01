@@ -38,11 +38,34 @@ function loadQuestion() {
     document.getElementById("next-question").style.display = "none";
     updateScoreDisplay();  // Update live score display
 
-    // Enable buttons and reset styles
-    document.querySelectorAll(".option").forEach(btn => {
+    // Reset scratch canvases
+    resetScratchCanvases();
+
+    // Here we generate the options for each question (A, B, C, D)
+    document.querySelectorAll(".option").forEach((btn, index) => {
         btn.disabled = false;
         btn.style.backgroundColor = "gray";
         btn.onclick = () => checkAnswer(btn.dataset.option, btn);
+        
+        // Update the answer placeholders (A, B, C, D) dynamically
+        const optionLetter = btn.dataset.option;
+        btn.querySelector(".answer").textContent = `Option ${optionLetter} Answer`;
+    });
+}
+
+// Function to reset scratch canvases
+function resetScratchCanvases() {
+    const canvasElements = document.querySelectorAll('.scratch-canvas');
+    
+    canvasElements.forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        
+        // Clear the canvas before starting a new question
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Reapply the gray scratchable area for the new question
+        ctx.fillStyle = '#999';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     });
 }
 
