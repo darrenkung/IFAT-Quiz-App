@@ -24,16 +24,6 @@ async function startQuiz() {
     loadQuestion();
 }
 
-// Fetch the answer key based on the quiz code
-async function fetchAnswerKey(quizCode) {
-    // Replace with your actual API or backend call to fetch the answer key
-    const response = await fetch(`https://your-server.com/answerkeys/${quizCode}.txt`);
-    if (response.ok) {
-        return await response.text();
-    }
-    return null;
-}
-
 // Load the next question
 function loadQuestion() {
     if (currentQuestion >= answerKey.length) {
