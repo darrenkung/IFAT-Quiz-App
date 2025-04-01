@@ -38,6 +38,7 @@ function loadQuestion() {
     document.getElementById("next-question").style.display = "none";
     updateScoreDisplay();  // Update live score display
 
+    // Enable buttons and reset styles
     document.querySelectorAll(".option").forEach(btn => {
         btn.disabled = false;
         btn.style.backgroundColor = "gray";
@@ -48,6 +49,11 @@ function loadQuestion() {
 // Check the selected answer
 function checkAnswer(selectedOption, button) {
     attempts++;
+
+    // Disable all options after an answer is clicked
+    document.querySelectorAll(".option").forEach(btn => {
+        btn.disabled = true;
+    });
 
     if (selectedOption === answerKey[currentQuestion]) {
         button.style.backgroundColor = "green";
@@ -67,7 +73,8 @@ function checkAnswer(selectedOption, button) {
         }
     }
 
-    button.disabled = true;
+    // Enable the Next Question button
+    document.getElementById("next-question").style.display = "block";
 }
 
 // Update the live score display
