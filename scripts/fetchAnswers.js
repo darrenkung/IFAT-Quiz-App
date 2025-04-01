@@ -1,5 +1,5 @@
 async function fetchAnswerKey(quizCode) {
-    const repoOwner = "your-github-username";  // Change to your GitHub username
+    const repoOwner = "darrenkung";  // Change to your GitHub username
     const repoName = "IFAT-Quiz-App";  // Change to your repository name
     const filePath = `data/${quizCode}.txt`;
     const rawFileURL = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
