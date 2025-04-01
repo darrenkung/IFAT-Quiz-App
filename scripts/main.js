@@ -2,9 +2,11 @@ let answerKey = "";
 let currentQuestion = 0;
 let attempts = 0;
 let score = 0;
+let quizCode = "";
 
+// Fetch and start the quiz
 async function startQuiz() {
-    const quizCode = document.getElementById("quizCode").value.trim();
+    quizCode = document.getElementById("quizCode").value.trim();
     if (!quizCode) {
         alert("Please enter a quiz code.");
         return;
@@ -22,6 +24,7 @@ async function startQuiz() {
     loadQuestion();
 }
 
+// Load the next question
 function loadQuestion() {
     if (currentQuestion >= answerKey.length) {
         alert(`Quiz completed! Your final score: ${score}`);
@@ -33,6 +36,7 @@ function loadQuestion() {
     document.getElementById("question-number").textContent = currentQuestion + 1;
     document.getElementById("feedback").textContent = "";
     document.getElementById("next-question").style.display = "none";
+    updateScoreDisplay();  // Update live score display
 
     document.querySelectorAll(".option").forEach(btn => {
         btn.disabled = false;
@@ -41,19 +45,24 @@ function loadQuestion() {
     });
 }
 
+// Check the selected answer
 function checkAnswer(selectedOption, button) {
     attempts++;
 
     if (selectedOption === answerKey[currentQuestion]) {
         button.style.backgroundColor = "green";
         document.getElementById("feedback").textContent = "Correct!";
+        
         score += attempts === 1 ? 2 : (attempts === 2 ? 1 : 0);
+        updateScoreDisplay(); // Update live score display
+
         document.getElementById("next-question").style.display = "block";
     } else {
         button.style.backgroundColor = "red";
         if (attempts === 4) {
             document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
             score -= 1;
+            updateScoreDisplay(); // Update live score display
             setTimeout(nextQuestion, 1000);
         }
     }
@@ -61,6 +70,12 @@ function checkAnswer(selectedOption, button) {
     button.disabled = true;
 }
 
+// Update the live score display
+function updateScoreDisplay() {
+    document.getElementById("live-score").textContent = score;
+}
+
+// Move to the next question
 function nextQuestion() {
     currentQuestion++;
     loadQuestion();
