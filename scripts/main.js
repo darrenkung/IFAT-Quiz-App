@@ -109,6 +109,9 @@ function checkAnswer(selectedOption) {
             score -= 1; // Deduct 1 mark if all attempts are used up
             updateScoreDisplay(); // Update live score display
             setTimeout(nextQuestion, 1000);
+         } else {
+         // Allow the user to retry the scratching on the same question
+         document.getElementById("feedback").textContent = "Incorrect! Try again!";
         }
     }
 }
