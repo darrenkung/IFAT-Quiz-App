@@ -16,20 +16,23 @@
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .scratch-card {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 60px;   /* Set width of the scratch-card to 60px */
+    height: 60px;  /* Set height of the scratch-card to 60px */
 }
 
 .scratch-canvas {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 60px;  /* Set width to 60px */
+    height: 60px; /* Set height to 60px */
     background-color: #999; /* The "scratchable" area */
     z-index: 1;
 }
@@ -39,7 +42,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 18px;
+    font-size: 14px;  /* Adjust font size to fit inside the 60x60 area */
     color: white;
     z-index: 2;
     display: none; /* Hidden by default */
