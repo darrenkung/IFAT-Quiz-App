@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>IF-AT Scratch Card Quiz</h1>
+    
     <div id="quiz-setup" style="text-align: center;">
         <h1>Enter Quiz Code</h1>
         <input type="text" id="quizCode" placeholder="Enter quiz code">
@@ -14,39 +16,39 @@
     </div>
 
     <div id="quiz-container" style="display: none;">
-        <div id="question-number">Question 1</div>
-        <div id="question-text">What is the capital of France?</div>
 
+        <h2>Question <span id="question-number"></span></h2>
+        
+        <!-- Live score display -->
+        <h3>Current Score: <span id="live-score">0</span></h3>
+        
+        <div id="scratch-card">
+            
         <div class="option-container">
             <div class="option" data-option="A">
                 <div class="scratch-card">
                     <canvas class="scratch-canvas"></canvas>
-                    <div class="answer">Paris</div>
                 </div>
             </div>
             <div class="option" data-option="B">
                 <div class="scratch-card">
                     <canvas class="scratch-canvas"></canvas>
-                    <div class="answer">Berlin</div>
                 </div>
             </div>
             <div class="option" data-option="C">
                 <div class="scratch-card">
                     <canvas class="scratch-canvas"></canvas>
-                    <div class="answer">Madrid</div>
                 </div>
             </div>
             <div class="option" data-option="D">
                 <div class="scratch-card">
                     <canvas class="scratch-canvas"></canvas>
-                    <div class="answer">London</div>
                 </div>
             </div>
         </div>
 
         <div id="feedback"></div>
         <button id="next-question" style="display:none" onclick="nextQuestion()">Next Question</button>
-        <div id="live-score">Score: 0</div>
     </div>
     
     <script src="scripts/fetchAnswers.js"></script>
