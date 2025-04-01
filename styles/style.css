@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#scratch-card {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.option {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background-color: gray;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.option:hover {
+    background-color: darkgray;
+}
+
+#feedback {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
