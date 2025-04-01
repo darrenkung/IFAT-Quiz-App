@@ -37,16 +37,14 @@ function loadQuestion() {
     document.getElementById("feedback").textContent = "";
     document.getElementById("next-question").style.display = "none";
     updateScoreDisplay();  // Update live score display
-
+  
+    // Optionally, you can dynamically display options here, but there's no need to have them clickable anymore
+    // (since they are now automatically selected via scratching)
+    // If you still want to display the option letters, you can do it like this:
     // Reset scratch canvases
     resetScratchCanvases();
 
-    // Here we generate the options for each question (A, B, C, D)
     document.querySelectorAll(".option").forEach((btn, index) => {
-        btn.disabled = false;
-        btn.onclick = () => checkAnswer(btn.dataset.option, btn);
-        
-        // Update the answer placeholders (A, B, C, D) dynamically
         const optionLetter = btn.dataset.option;
         btn.querySelector(".answer").textContent = `Option ${optionLetter} Answer`;
     });
@@ -66,6 +64,17 @@ function resetScratchCanvases() {
         ctx.fillStyle = '#999';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     });
+}
+
+// Update the live score display
+function updateScoreDisplay() {
+    document.getElementById("live-score").textContent = `Score: ${score}`;
+}
+
+// Move to the next question
+function nextQuestion() {
+    currentQuestion++;
+    loadQuestion();
 }
 
 // Check the selected answer
@@ -108,17 +117,6 @@ function checkAnswer(selectedOption, button) {
     }
 }
 
-// Update the live score display
-function updateScoreDisplay() {
-    document.getElementById("live-score").textContent = `Score: ${score}`;
-}
-
-// Move to the next question
-function nextQuestion() {
-    currentQuestion++;
-    loadQuestion();
-}
-
 // Initialize canvas for scratch effect
 const canvasElements = document.querySelectorAll('.scratch-canvas');
 
@@ -126,7 +124,7 @@ const canvasElements = document.querySelectorAll('.scratch-canvas');
 canvasElements.forEach(canvas => {
     const ctx = canvas.getContext('2d');
     let isScratching = false;
-    let scratchedAmount = 0; // Track how much has been scratched
+    let scratchedArea = 0; // Track how much has been scratched
     const threshold = 0.7; // Threshold to consider an option selected (70%)
 
     // Set canvas size (100x100 pixels)
@@ -152,15 +150,18 @@ canvasElements.forEach(canvas => {
         }
 
         // Clear a small area where the user is "scratching"
-        ctx.clearRect(x - 10, y - 10, 20, 20);
+        const scratchWidth = 20;
+        ctx.clearRect(x - scratchWidth / 2, y - scratchWidth / 2, scratchWidth, scratchWidth);
 
-        // Update the scratched amount
-        scratchedAmount += 20;  // Increment by the area scratched (20px per scratch)
+        // Update the scratched area
+        scratchedArea += scratchWidth * scratchWidth;
 
         // Check if the threshold is reached (70% of the canvas area)
-        if (scratchedAmount >= canvas.width * canvas.height * threshold) {
-            // Enable the button to allow answer submission
-            enableOptionToSubmit(canvas);
+        const totalArea = canvas.width * canvas.height;
+        if (scratchedArea / totalArea >= threshold) {
+            // Once the threshold is reached, trigger the checkAnswer function
+            const option = canvas.closest('.option').dataset.option;  // Get the option (A, B, C, D)
+            checkAnswer(option); // Pass the option to check if it's correct
         }
     };
 
@@ -187,9 +188,4 @@ canvasElements.forEach(canvas => {
         isScratching = false;
     });
 
-    // Enable the button once the threshold is met
-    function enableOptionToSubmit(canvas) {
-        const optionButton = canvas.closest('.option');
-        optionButton.disabled = false;
-    }
 });
