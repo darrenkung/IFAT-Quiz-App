@@ -43,8 +43,7 @@ function loadQuestion() {
 
     // Here we generate the options for each question (A, B, C, D)
     document.querySelectorAll(".option").forEach((btn, index) => {
-        btn.disabled = false;
-        btn.style.backgroundColor = "gray";
+        btn.disabled = true;
         btn.onclick = () => checkAnswer(btn.dataset.option, btn);
         
         // Update the answer placeholders (A, B, C, D) dynamically
@@ -130,9 +129,9 @@ canvasElements.forEach(canvas => {
     let scratchedAmount = 0; // Track how much has been scratched
     const threshold = 0.7; // Threshold to consider an option selected (70%)
 
-    // Set canvas size (60x60 pixels)
-    canvas.width = 60;
-    canvas.height = 60;
+    // Set canvas size (100x100 pixels)
+    canvas.width = 100;
+    canvas.height = 100;
 
     // Create the scratchable overlay (gray layer)
     ctx.fillStyle = '#999';
@@ -192,6 +191,5 @@ canvasElements.forEach(canvas => {
     function enableOptionToSubmit(canvas) {
         const optionButton = canvas.closest('.option');
         optionButton.disabled = false;
-        optionButton.style.backgroundColor = "green"; // Indicate readiness to submit
     }
 });
