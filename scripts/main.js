@@ -161,6 +161,7 @@ canvasElements.forEach(canvas => {
             // Once the threshold is reached, trigger the checkAnswer function
             const option = canvas.closest('.option').dataset.option;  // Get the option (A, B, C, D)
             checkAnswer(option); // Pass the option to check if it's correct
+            canvas.style.pointerEvents = "none"; // Prevent interaction
         }
     };
 
