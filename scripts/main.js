@@ -43,7 +43,7 @@ function loadQuestion() {
 
     // Here we generate the options for each question (A, B, C, D)
     document.querySelectorAll(".option").forEach((btn, index) => {
-        btn.disabled = true;
+        btn.disabled = false;
         btn.onclick = () => checkAnswer(btn.dataset.option, btn);
         
         // Update the answer placeholders (A, B, C, D) dynamically
