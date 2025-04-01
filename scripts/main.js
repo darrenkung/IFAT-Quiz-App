@@ -78,12 +78,11 @@ function nextQuestion() {
 }
 
 // Check the selected answer
-function checkAnswer(selectedOption, button) {
+function checkAnswer(selectedOption) {
     attempts++;
 
     // If the student selects the correct answer
-    if (selectedOption === answerKey[currentQuestion]) {
-        button.style.backgroundColor = "green";
+    if (selectedOption === answerKey[currentQuestion]) {    
         document.getElementById("feedback").textContent = "Correct!";
         
         // Update the score based on the attempt number (4, 2, 1, 0)
@@ -100,14 +99,11 @@ function checkAnswer(selectedOption, button) {
         updateScoreDisplay(); // Update live score display
 
         // Disable all options once the correct answer is selected
-        document.querySelectorAll(".option").forEach(btn => {
-            btn.disabled = true;
-        });
+         disableAllScratchCanvases();
 
         // Show the Next Question button
         document.getElementById("next-question").style.display = "block";
     } else {
-        button.style.backgroundColor = "red";
         if (attempts === 4) {
             document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
             score -= 1; // Deduct 1 mark if all attempts are used up
@@ -189,3 +185,18 @@ canvasElements.forEach(canvas => {
     });
 
 });
+
+// Function to disable all scratch canvases
+function disableAllScratchCanvases() {
+    const canvasElements = document.querySelectorAll('.scratch-canvas');
+
+    canvasElements.forEach(canvas => {
+        // Remove event listeners so they cannot be scratched anymore
+        canvas.removeEventListener('mousedown', scratchHandler);
+        canvas.removeEventListener('mousemove', scratchHandler);
+        canvas.removeEventListener('mouseup', stopScratching);
+        canvas.removeEventListener('touchstart', scratchHandler);
+        canvas.removeEventListener('touchmove', scratchHandler);
+        canvas.removeEventListener('touchend', stopScratching);
+    });
+}
