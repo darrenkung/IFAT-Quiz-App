@@ -83,6 +83,7 @@ function checkAnswer(selectedOption) {
 
     // If the student selects the correct answer
     if (selectedOption === answerKey[currentQuestion]) {    
+        option.style.backgroundColor = "green"
         document.getElementById("feedback").textContent = "Correct!";
         
         // Update the score based on the attempt number (4, 2, 1, 0)
@@ -97,12 +98,13 @@ function checkAnswer(selectedOption) {
         }
 
         updateScoreDisplay(); // Update live score display
-
-        // Disable all options once the correct answer is selected
-         disableAllScratchCanvases();
-
+        
         // Show the Next Question button
         document.getElementById("next-question").style.display = "block";
+
+        // Disable all options once the correct answer is selected
+        disableAllScratchCanvases();
+
     } else {
         if (attempts === 4) {
             document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
