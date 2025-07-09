@@ -70,13 +70,14 @@ function checkAnswer(selectedOption, button) {
 
         // Disable all options once the correct answer is selected
         document.querySelectorAll(".option").forEach(btn => {
-            btn.disabled = true;
+            button.disabled = true;
         });
 
         // Show the Next Question button
         document.getElementById("next-question").style.display = "block";
     } else {
         button.style.backgroundColor = "red";
+        button.disabled = true;
         if (attempts === 4) {
             document.getElementById("feedback").textContent = "Incorrect! Moving to next question.";
             score -= 1; // Deduct 1 mark if all attempts are used up
