@@ -3,36 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immediate Feedback Quiz</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>IF-AT Digital Scratch Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+            min-height: 100vh;
+        }
+        .scratch-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .scratch-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .scratch-btn:disabled {
+            cursor: default;
+        }
+        .scratch-btn.correct {
+            background-color: #10b981 !important;
+            color: white;
+            border-color: #059669;
+        }
+        .scratch-btn.incorrect {
+            background-color: #f43f5e !important;
+            color: white;
+            border-color: #e11d48;
+            opacity: 0.7;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            transition: width 0.4s ease;
+        }
+    </style>
 </head>
-<body>
-    <h1>Immediate Feedback Quiz</h1>
-    
-    <div id="quiz-setup">
-        <label for="quizCode">Enter Quiz Code:</label>
-        <input type="text" id="quizCode" placeholder="e.g., sample_quiz">
-        <button onclick="startQuiz()">Start</button>
-    </div>
+<body class="flex items-center justify-center p-4">
 
-    <div id="quiz-container" style="display: none;">
-        <h2>Question <span id="question-number"></span></h2>
-        
-        <!-- Live score display -->
-        <h3>Current Score: <span id="live-score">0</span></h3>
-        
-        <div id="option container">
-            <button class="option" data-option="A">A</button>
-            <button class="option" data-option="B">B</button>
-            <button class="option" data-option="C">C</button>
-            <button class="option" data-option="D">D</button>
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-slate-900 p-6 text-white">
+            <h1 class="text-xl font-bold tracking-tight">IF-AT Digital Card</h1>
+            <p class="text-slate-400 text-sm mt-1">Immediate Feedback Assessment</p>
+        </div>
+
+        <!-- Setup Screen -->
+        <div id="quiz-setup" class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label for="quizCode" class="text-sm font-semibold text-slate-700 block">Quiz Access Code</label>
+                <input type="text" id="quizCode" placeholder="Enter code (e.g., sample_quiz)" 
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none transition-all">
+            </div>
+            <button onclick="startQuiz()" 
+                class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98]">
+                Start Quiz
+            </button>
+            <p class="text-center text-xs text-slate-400 italic">Try "demo" for a sample quiz</p>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="hidden p-8 space-y-6 fade-in">
+            <!-- Progress & Score -->
+            <div class="flex items-center justify-between mb-2">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Question <span id="question-number">1</span>
+                </div>
+                <div class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold shadow-sm">
+                    Score: <span id="live-score">0</span>
+                </div>
+            </div>
+            
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-6">
+                <div id="progress-indicator" class="progress-bar bg-slate-900 h-full w-0"></div>
+            </div>
+
+            <h2 class="text-lg font-bold text-slate-800 leading-tight mb-4">Select an option to reveal the result:</h2>
+            
+            <!-- Scratch Card Grid -->
+            <div id="scratch-card" class="grid grid-cols-2 gap-4">
+                <button class="option scratch-btn h-20 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xl" data-option="A">A</button>
+                <button class="option scratch-btn h-20 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xl" data-option="B">B</button>
+                <button class="option scratch-btn h-20 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xl" data-option="C">C</button>
+                <button class="option scratch-btn h-20 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xl" data-option="D">D</button>
+            </div>
+            
+            <!-- Feedback Area -->
+            <div class="min-h-[60px] flex flex-col items-center justify-center space-y-4">
+                <p id="feedback" class="font-semibold text-center"></p>
+                <button id="next-question" class="hidden w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-200" onclick="nextQuestion()">
+                    Continue to Next Question
+                </button>
+            </div>
         </div>
         
-        <p id="feedback"></p>
-        <button id="next-question" style="display: none;" onclick="nextQuestion()">Next Question</button>
+        <!-- Result Modal (Simple hidden div) -->
+        <div id="result-screen" class="hidden p-8 text-center space-y-6 fade-in">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800">Quiz Completed!</h2>
+            <p class="text-slate-600">You've reached the end of the assessment.</p>
+            <div class="text-4xl font-black text-slate-900 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                <span id="final-score">0</span> pts
+            </div>
+            <button onclick="location.reload()" class="w-full border-2 border-slate-200 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-50">
+                Retake Quiz
+            </button>
+        </div>
     </div>
 
-    <script src="scripts/fetchAnswers.js"></script>
-    <script src="scripts/main.js"></script>
+    <script>
+        // Mock fetch function to replace fetchAnswers.js for demonstration
+    async function fetchAnswerKey(quizCode) {
+    const repoOwner = "darrenkung";  // Change to your GitHub username
+    const repoName = "IFAT-Quiz-App";  // Change to your repository name
+    const filePath = `data/${quizCode}.txt`;
+    const rawFileURL = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${filePath}`;
+
+    try {
+        const response = await fetch(rawFileURL);
+        if (!response.ok) throw new Error("Quiz not found. Please check the quiz code.");
+        
+        const answerKey = await response.text();
+        return answerKey.trim();  // Remove extra whitespace
+    } catch (error) {
+        console.error("Error fetching answer key:", error);
+        return null;
+    }
+}
+        let answerKey = "";
+        let currentQuestion = 0;
+        let attempts = 0;
+        let score = 0;
+        let quizCode = "";
+
+        async function startQuiz() {
+            quizCode = document.getElementById("quizCode").value.trim();
+            if (!quizCode) {
+                showFeedback("Please enter a code!", "text-rose-500");
+                return;
+            }
+
+            // Show loading state
+            const btn = document.querySelector("#quiz-setup button");
+            const originalText = btn.innerText;
+            btn.innerText = "Loading...";
+            btn.disabled = true;
+
+            answerKey = await fetchAnswerKey(quizCode);
+            
+            if (!answerKey) {
+                showFeedback("Quiz not found!", "text-rose-500");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            document.getElementById("quiz-setup").classList.add("hidden");
+            document.getElementById("quiz-container").classList.remove("hidden");
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= answerKey.length) {
+                showFinalResults();
+                return;
+            }
+
+            attempts = 0;
+            document.getElementById("question-number").textContent = currentQuestion + 1;
+            document.getElementById("feedback").textContent = "";
+            document.getElementById("next-question").classList.add("hidden");
+            
+            // Progress Bar
+            const progress = ((currentQuestion) / answerKey.length) * 100;
+            document.getElementById("progress-indicator").style.width = `${progress}%`;
+
+            updateScoreDisplay();
+
+            // Reset Buttons
+            document.querySelectorAll(".option").forEach(btn => {
+                btn.disabled = false;
+                btn.className = "option scratch-btn h-20 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xl";
+                btn.onclick = () => checkAnswer(btn.dataset.option, btn);
+            });
+        }
+
+        function checkAnswer(selectedOption, button) {
+            if (button.disabled) return;
+            attempts++;
+
+            if (selectedOption === answerKey[currentQuestion]) {
+                button.classList.add("correct");
+                showFeedback("Correct! You found it.", "text-emerald-600");
+                
+                // Scoring: 1st=4, 2nd=2, 3rd=1, 4th=0
+                const points = [4, 2, 1, 0];
+                score += points[Math.min(attempts - 1, 3)];
+
+                updateScoreDisplay();
+
+                // Lock buttons
+                document.querySelectorAll(".option").forEach(btn => {
+                    btn.disabled = true;
+                    if(!btn.classList.contains('correct') && !btn.classList.contains('incorrect')) {
+                        btn.style.opacity = "0.4";
+                    }
+                });
+
+                document.getElementById("next-question").classList.remove("hidden");
+            } else {
+                button.classList.add("incorrect");
+                button.disabled = true; // Can't click the same wrong one twice
+                showFeedback("Not there! Try again.", "text-rose-500");
+
+                if (attempts === 4) {
+                    showFeedback("All attempts used! Moving on.", "text-slate-500");
+                    score = Math.max(0, score - 1); // Small penalty for failing completely
+                    updateScoreDisplay();
+                    setTimeout(nextQuestion, 1500);
+                }
+            }
+        }
+
+        function showFeedback(text, colorClass) {
+            const fb = document.getElementById("feedback");
+            fb.textContent = text;
+            fb.className = `font-semibold text-center ${colorClass} fade-in`;
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById("live-score").textContent = score;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function showFinalResults() {
+            document.getElementById("quiz-container").classList.add("hidden");
+            document.getElementById("result-screen").classList.remove("hidden");
+            document.getElementById("final-score").textContent = score;
+        }
+    </script>
 </body>
 </html>
